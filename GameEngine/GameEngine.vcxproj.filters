@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Natvis Include="..\Libraries\imgui\misc\debuggers\imgui.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Libraries\imgui\imgui.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="include\Render\CameraClass.hpp" />
+    <ClCompile Include="include\Render\ModelClass.hpp" />
+    <ClCompile Include="src\Utilities\MemoryPool.cpp" />
+    <ClCompile Include="src\Render\Dx11\Dx11Renderer.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\Modules\InputManager.cpp" />
+    <ClCompile Include="src\Modules\ScenesManager.cpp" />
+    <ClCompile Include="src\Modules\AudioManager.cpp" />
+    <ClCompile Include="src\Modules\Time.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Render\CameClass.cpp" />
+    <ClCompile Include="src\Modules\Window.cpp" />
+    <ClCompile Include="src\Render\Dx11\Dx11ColorShaderClass.cpp" />
+    <ClCompile Include="src\Modules\RenderModule.cpp" />
+    <ClCompile Include="src\Render\Color.cpp" />
+    <ClCompile Include="src\Render\Vertex.cpp" />
+    <ClCompile Include="src\Render\Dx11\Dx11ModelClass.cpp" />
+    <ClCompile Include="..\Libraries\imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\Libraries\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\Libraries\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\Modules\ScenesManager.cpp" />
+    <ClCompile Include="src\Modules\Time.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Utilities\PerformanceRecord.cpp" />
+    <ClCompile Include="src\Texture\textureclass.cpp" />
+    <ClCompile Include="src\Texture\TextureShaderClass.cpp" />
+    <ClCompile Include="src\Render\Dx11\Dx11ImGuiGraphics.cpp" />
+    <ClCompile Include="src\Physics\PhysicsSystem.cpp" />
+    <ClCompile Include="include\Modules\PhysicsModule.hpp" />
+    <ClCompile Include="src\Modules\PhysicsModule.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Modules\RenderModule.hpp" />
+    <ClInclude Include="include\Utilities\MemoryPool.hpp" />
+    <ClInclude Include="include\Utilities\ObjectPooling.hpp" />
+    <ClInclude Include="include\Utilities\PoolAllocator.hpp" />
+    <ClInclude Include="include\Common.hpp" />
+    <ClInclude Include="include\Component.hpp" />
+    <ClInclude Include="include\Components\Transform.hpp" />
+    <ClInclude Include="include\Render\Dx11\Dx11Renderer.hpp" />
+    <ClInclude Include="include\Engine.hpp" />
+    <ClInclude Include="include\GameObject.hpp" />
+    <ClInclude Include="include\GLFWWindow.hpp" />
+    <ClInclude Include="include\Module.hpp" />
+    <ClInclude Include="include\Modules\InputManager.hpp" />
+    <ClInclude Include="include\Modules\ScenesManager.hpp" />
+    <ClInclude Include="include\Modules\Time.hpp" />
+    <ClInclude Include="include\Modules\Window.hpp" />
+    <ClInclude Include="include\Modules\InputEnums.hpp" />
+    <ClInclude Include="include\Modules\Vector2Representation.hpp" />
+    <ClInclude Include="include\Scene.hpp" />
+    <ClInclude Include="include\Render\ColorShaderClass.hpp" />
+    <ClInclude Include="include\Utilities\Discarder.hpp" />
+    <ClInclude Include="include\Utilities\MulticastDelegate.hpp" />
+    <ClInclude Include="include\Modules\RenderModule.hpp" />
+    <ClInclude Include="include\Render\IDrawable.hpp" />
+    <ClInclude Include="include\Render\Shape.hpp" />
+    <ClInclude Include="include\Render\Vertex.hpp" />
+    <ClInclude Include="include\Render\Color.hpp" />
+    <ClInclude Include="include\Render\Renderer.hpp" />
+    <ClInclude Include="include\Render\Dx11\Dx11ModelClass.hpp" />
+    <ClInclude Include="include\Render\Dx11\Dx11ColorShaderClass.hpp" />
+    <ClInclude Include="include\Render\APIsVariant.hpp" />
+    <ClInclude Include="include\Utilities\PerformanceRecord.hpp" />
+    <ClInclude Include="include\Utilities\ImGUI.hpp" />
+    <ClInclude Include="include\Modules\AudioManager.hpp" />
+    <ClInclude Include="include\Common.hpp" />
+    <ClInclude Include="include\Component.hpp" />
+    <ClInclude Include="include\Components\Transform.hpp" />
+    <ClInclude Include="include\Engine.hpp" />
+    <ClInclude Include="include\GameObject.hpp" />
+    <ClInclude Include="include\Module.hpp" />
+    <ClInclude Include="include\Modules\ScenesManager.hpp" />
+    <ClInclude Include="include\Modules\Time.hpp" />
+    <ClInclude Include="include\Scene.hpp" />
+    <ClInclude Include="include\Texture\textureclass.hpp" />
+    <ClInclude Include="include\Texture\TextureShaderClass.hpp" />
+    <ClInclude Include="include\Utilities\Discarder.hpp" />
+    <ClInclude Include="include\Utilities\MulticastDelegate.hpp" />
+    <ClInclude Include="include\Render\ImGuiGraphics.hpp" />
+    <ClInclude Include="include\Render\Dx11\Dx11ImGuiGraphics.hpp" />
+    <ClInclude Include="include\Physics\PhysicsSystem.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Libraries\imgui\misc\debuggers\imgui.natstepfilter" />
+    <None Include="include\Utilities\ObjectPooling.inl" />
+    <None Include="include\Utilities\PoolAllocator.inl" />
+    <None Include="include\Component.inl" />
+    <None Include="include\GameObject.inl" />
+    <None Include="include\Modules\ScenesManager.inl" />
+    <None Include="include\Utilities\MulticastDelegate.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\Libraries\imgui\misc\debuggers\imgui.natvis" />
+    <None Include="include\Scene.inl" />
+  </ItemGroup>
+</Project>
