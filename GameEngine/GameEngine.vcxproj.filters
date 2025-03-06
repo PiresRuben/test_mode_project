@@ -37,9 +37,7 @@
     <ClCompile Include="src\Components\Renderable.cpp" />
     <ClCompile Include="src\Utilities\Logger.cpp" />
     <ClCompile Include="src\Modules\ResourcesManager.cpp" />
-    <ClCompile Include="src\Physics\PhysicsSystem.cpp" />
     <ClCompile Include="include\Modules\PhysicsModule.hpp" />
-    <ClCompile Include="src\Modules\PhysicsModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Modules\RenderModule.hpp" />

@@ -37,8 +37,6 @@
     <ClCompile Include="src\Components\Renderable.cpp" />
     <ClCompile Include="src\Modules\ResourcesManager.cpp" />
     <ClCompile Include="include\Modules\PhysicsModule.hpp" />
-    <ClCompile Include="src\Modules\PhysicsModule.cpp" />
-    <ClCompile Include="src\Physics\PhysicsSystem.cpp" />
     <ClCompile Include="src\Render\Color.cpp" />
     <ClCompile Include="src\Render\Dx11\Dx11ImGuiGraphics.cpp" />
     <ClCompile Include="src\Render\Dx11\Dx11ModelClass.cpp" />
