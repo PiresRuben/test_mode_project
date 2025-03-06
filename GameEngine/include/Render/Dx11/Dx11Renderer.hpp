@@ -23,9 +23,12 @@ public:
 private:
     struct IDXGISwapChain* swapChain = nullptr;
     struct ID3D11Device* device = nullptr;
-    struct ID3D11DeviceContext* context = nullptr;
+    struct ID3D11DeviceContext* deviceContext = nullptr;
     struct ID3D11RenderTargetView* renderTarget = nullptr;
     struct ID3D11RasterizerState* rsState = nullptr;
+
+    struct ID3D11Texture2D* depthTexture = nullptr;
+    struct ID3D11DepthStencilView* depthTarget = nullptr;
 
 };
 

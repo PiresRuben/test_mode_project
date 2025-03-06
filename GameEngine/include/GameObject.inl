@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <algorithm>
 
@@ -15,6 +17,10 @@ inline GameObject::GameObject(Scene* parentScene_, bool enabled_) {
 
 inline void GameObject::Disable() {
 
+	for (GameObject* child : children) {
+		child->Disable();
+	}
+
 	for (std::shared_ptr<Component> component : components) {
 		component->Disable();
 	}
@@ -29,6 +35,10 @@ inline void GameObject::Disable() {
 
 inline void GameObject::Enable() {
 
+	for (GameObject* child : children) {
+		child->Enable();
+	}
+
 	for (std::shared_ptr<Component> component : components) {
 		component->Enable();
 	}
@@ -42,9 +52,9 @@ inline void GameObject::Enable() {
 }
 
 // Only throws when TComponent does not inherit component (or the GameObject s parent scene is nullptr)
-template<typename TComponent> std::shared_ptr<TComponent> GameObject::AddComponent() {
+template<typename TComponent, typename... Args> std::shared_ptr<TComponent> GameObject::AddComponent(Args&&... args) {
 
-	std::shared_ptr<TComponent> componentPtr = std::make_shared<TComponent>();
+	std::shared_ptr<TComponent> componentPtr = std::make_shared<TComponent>(std::forward<Args>(args)...);
 	std::shared_ptr<Component> asComponent = std::static_pointer_cast<Component>(componentPtr);
 
 	asComponent->SetOwner(this);

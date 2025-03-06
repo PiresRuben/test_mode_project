@@ -3,16 +3,16 @@
 #include "Render/APIsVariant.hpp"
 
 
-class ImGuiGraphics {
+class ImGUIGraphics {
 public:
-	ImGuiGraphics() = default;
-	ImGuiGraphics(const ImGuiGraphics&) = default;
-	~ImGuiGraphics() = default;
+	ImGUIGraphics() = default;
+	ImGUIGraphics(const ImGUIGraphics&) = default;
+	~ImGUIGraphics() = default;
 
 	virtual bool Init(DeviceVariant device, DeviceContextVariant device_context) const = 0;
 	virtual void Shutdown() const = 0;
 
 	virtual void NewFrame() const = 0;
-	virtual void RenderDrawData(struct ImDrawData* draw_data) const = 0;
+	virtual void RenderDrawData() const = 0;
 
 };

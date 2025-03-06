@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Modules/ScenesManager.hpp"
 #include "Scene.hpp"
 

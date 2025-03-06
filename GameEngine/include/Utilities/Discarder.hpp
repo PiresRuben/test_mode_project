@@ -2,7 +2,7 @@
 
 class Discarder {
 public:
-	template<typename T> constexpr inline void operator=(T&) const { }
+	template<typename T> constexpr inline void operator=(const T&) const { }
 private:
 };
 

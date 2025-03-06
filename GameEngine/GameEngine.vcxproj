@@ -26,23 +26,28 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Libraries\imgui\backends\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\Libraries\imgui\backends\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\Libraries\imgui\imgui.cpp" />
-    <ClCompile Include="..\Libraries\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\Libraries\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\Libraries\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\Libraries\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\Libraries\include\imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\Libraries\include\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Libraries\include\imgui\imgui.cpp" />
+    <ClCompile Include="..\Libraries\include\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\Libraries\include\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\Libraries\include\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\Libraries\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Components\Camera.cpp" />
+    <ClCompile Include="src\Components\Renderable.cpp" />
+    <ClCompile Include="src\Modules\ResourcesManager.cpp" />
     <ClCompile Include="include\Modules\PhysicsModule.hpp" />
-    <ClCompile Include="include\Render\CameraClass.hpp" />
-    <ClCompile Include="include\Render\ModelClass.hpp" />
     <ClCompile Include="src\Modules\PhysicsModule.cpp" />
     <ClCompile Include="src\Physics\PhysicsSystem.cpp" />
     <ClCompile Include="src\Render\Color.cpp" />
     <ClCompile Include="src\Render\Dx11\Dx11ImGuiGraphics.cpp" />
     <ClCompile Include="src\Render\Dx11\Dx11ModelClass.cpp" />
     <ClCompile Include="src\Render\Vertex.cpp" />
+    <ClCompile Include="src\Components\MeshRenderer.cpp" />
     <ClCompile Include="src\Modules\RenderModule.cpp" />
+    <ClCompile Include="src\Resources\Mesh.cpp" />
+    <ClCompile Include="src\Resources\ResourceManager.cpp" />
+    <ClCompile Include="src\Utilities\Logger.cpp" />
     <ClCompile Include="src\Utilities\MemoryPool.cpp" />
     <ClCompile Include="src\Render\Dx11\Dx11Renderer.cpp" />
     <ClCompile Include="src\Engine.cpp" />
@@ -52,7 +57,6 @@
     <ClCompile Include="src\Modules\AudioManager.cpp" />
     <ClCompile Include="src\Modules\Time.cpp" />
     <ClCompile Include="src\Scene.cpp" />
-    <ClCompile Include="src\Render\CameClass.cpp" />
     <ClCompile Include="src\Utilities\PerformanceRecord.cpp" />
     <ClCompile Include="src\Modules\Window.cpp" />
     <ClCompile Include="src\Texture\textureclass.cpp" />
@@ -60,6 +64,7 @@
     <ClCompile Include="src\Render\Dx11\Dx11ColorShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Modules\ResourcesManager.hpp" />
     <ClInclude Include="include\Physics\PhysicsSystem.hpp" />
     <ClInclude Include="include\Render\Dx11\Dx11ImGuiGraphics.hpp" />
     <ClInclude Include="include\Render\ImGuiGraphics.hpp" />
@@ -69,11 +74,21 @@
     <ClInclude Include="include\Render\Dx11\Dx11ModelClass.hpp" />
     <ClInclude Include="include\Render\IDrawable.hpp" />
     <ClInclude Include="include\Render\Renderer.hpp" />
+    <ClCompile Include="include\Render\ModelClass.hpp" />
     <ClInclude Include="include\Render\Shape.hpp" />
     <ClInclude Include="include\Render\Vertex.hpp" />
     <ClInclude Include="include\Modules\AudioManager.hpp" />
+    <ClInclude Include="include\Components\MeshRenderer.hpp" />
+    <ClInclude Include="include\Components\Renderable.hpp" />
+    <ClInclude Include="include\Core\AssetLoader.hpp" />
     <ClInclude Include="include\Modules\RenderModule.hpp" />
+    <ClInclude Include="include\Resources\Mesh.hpp" />
+    <ClInclude Include="include\Resources\Resource.hpp" />
+    <ClInclude Include="include\Resources\ResourceManager.hpp" />
+    <ClInclude Include="include\Utilities\Discarder.hpp" />
+    <ClInclude Include="include\Utilities\WICTextureLoader.h" />
     <ClInclude Include="include\Utilities\ImGUI.hpp" />
+    <ClInclude Include="include\Utilities\Logger.hpp" />
     <ClInclude Include="include\Utilities\MemoryPool.hpp" />
     <ClInclude Include="include\Utilities\ObjectPooling.hpp" />
     <ClInclude Include="include\Utilities\PoolAllocator.hpp" />
@@ -89,28 +104,37 @@
     <ClInclude Include="include\Modules\ScenesManager.hpp" />
     <ClInclude Include="include\Modules\Time.hpp" />
     <ClInclude Include="include\Modules\Window.hpp" />
-    <ClInclude Include="include\Modules\InputEnums.hpp" />
-    <ClInclude Include="include\Modules\Vector2Representation.hpp" />
     <ClInclude Include="include\Scene.hpp" />
     <ClInclude Include="include\Texture\textureclass.hpp" />
     <ClInclude Include="include\Texture\TextureShaderClass.hpp" />
     <ClInclude Include="include\Render\ColorShaderClass.hpp" />
-    <ClInclude Include="include\Utilities\Discarder.hpp" />
+    <ClInclude Include="include\Utilities\Discarer.hpp" />
     <ClInclude Include="include\Utilities\MulticastDelegate.hpp" />
     <ClInclude Include="include\Utilities\PerformanceRecord.hpp" />
+    <ClInclude Include="include\Vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Libraries\imgui\misc\debuggers\imgui.natstepfilter" />
+    <None Include="..\Libraries\include\imgui\misc\debuggers\imgui.natstepfilter" />
+    <None Include="include\Resources\ResourceManager.inl" />
+    <None Include="include\Components\Camera.hpp" />
     <None Include="include\Scene.inl" />
     <None Include="include\Utilities\ObjectPooling.inl" />
-    <None Include="include\Utilities\PoolAllocator.inl" />
     <None Include="include\Component.inl" />
     <None Include="include\GameObject.inl" />
     <None Include="include\Modules\ScenesManager.inl" />
     <None Include="include\Utilities\MulticastDelegate.inl" />
+    <None Include="include\Utilities\PoolAllocator.inl" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="..\Libraries\imgui\misc\debuggers\imgui.natvis" />
+    <Natvis Include="..\Libraries\include\imgui\misc\debuggers\imgui.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Texture\TexturePS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="src\Texture\TextureVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -212,17 +236,18 @@
       <PreprocessorDefinitions>_WINDOWS;DEBUG;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>$(ProjectDir)include\Utilities\Discarder.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Libraries/miniaudio;$(SolutionDir)Libraries/imgui;$(SolutionDir)Libraries/JoltPhysics/include;$(SolutionDir)Libraries/glfw/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Libraries\include;$(SolutionDir)Game\include\Scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\glfw\lib-vc2022;$(SolutionDir)Libraries\JoltPhysics\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;glfw3_mt.lib;jolt-d.lib;%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\lib\glfw;$(SolutionDir)Libraries\lib\JoltPhysics;$(SolutionDir)Libraries\lib\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;glfw3_mt.lib;zlibstaticd.lib;assimp-vc143-mtd.lib;jolt-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Lib>
@@ -236,9 +261,10 @@
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Libraries/include;$(SolutionDir)Game\include\Scenes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)Libraries/miniaudio;$(SolutionDir)Libraries/imgui;$(SolutionDir)Libraries/JoltPhysics/include;$(SolutionDir)Libraries/glfw/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <ForcedIncludeFiles>$(ProjectDir)include\Utilities\Discarder.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -247,10 +273,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\glfw\lib-vc2022;$(SolutionDir)Libraries\JoltPhysics\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;glfw3_mt.lib;jolt.lib;%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreAllDefaultLibraries>
-      </IgnoreAllDefaultLibraries>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\lib\glfw;$(SolutionDir)Libraries\lib\JoltPhysics;$(SolutionDir)Libraries\lib\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;glfw3_mt.lib;zlibstatic.lib;assimp-vc143-mt.lib;jolt.lib;%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -16,20 +16,20 @@ public:
 	bool Initialize(DeviceVariant device, class Window* window) override;
 	void Shutdown() override;
 
-	bool Render(DeviceContextVariant deviceContext, int indexCount, glm::mat4x4 worldMatrix, glm::mat4x4 viewMatrix, glm::mat4x4 projectionMatrix) override;
+	bool Render(DeviceContextVariant deviceContext, const int indicesCount, glm::mat4x4 worldMatrix, glm::mat4x4 viewMatrix, glm::mat4x4 projectionMatrix) override;
 
 private:
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
-	ID3D11InputLayout* layout = nullptr;
+	ID3D11InputLayout* inputLayout = nullptr;
 	ID3D11Buffer* matrixBuffer = nullptr;
 
-	bool InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename);
+	bool InitializeShader(ID3D11Device* device, const HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename);
 	void ShutdownShader();
-	void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename);
+	void OutputShaderErrorMessage(ID3D10Blob* errorMessage, const HWND hwnd, WCHAR* shaderFilename);
 
 	bool SetShaderParameters(ID3D11DeviceContext* deviceContext, glm::mat4x4 worldMatrix, glm::mat4x4 viewMatrix, glm::mat4x4 projectionMatrix);
-	void RenderShader(ID3D11DeviceContext* deviceContext, int indexCount);
+	void RenderShader(ID3D11DeviceContext* deviceContext, const int indicesCount);
 
 };
 

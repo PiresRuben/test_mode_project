@@ -3,9 +3,12 @@
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+
 #include <Core/Maths/vec2.hpp>
 
 #include "Module.hpp"
+
+
 
 class Window : public Module {
 private:
@@ -31,6 +34,7 @@ public:
     void Shutdown() override;
 
     GLFWwindow* GetWindow() const { return window; }
+    HWND GetHWND() const { return glfwGetWin32Window(window);  }
     bool ShouldClose() const { return shouldClose; }
     void SetShouldClose(const bool value) { shouldClose = value; }
 

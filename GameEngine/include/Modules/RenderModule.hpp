@@ -1,13 +1,32 @@
 #pragma once
 
 #include "Module.hpp"
+#include "Resources/Mesh.hpp"
 
 
 class RenderModule : public Module {
 public:
-	RenderModule() = default;
-	RenderModule(const RenderModule&) = default;
+
+	enum class RenderingAPI {
+		Dx11,
+		Dx12,
+		Vulkan,
+		OpenGL,
+
+		Unknown
+	};
+
+	RenderModule() {
+		instance = this;
+	}
 	~RenderModule() = default;
+
+	static RenderingAPI SelectAPI();
+	static class Renderer* CreateRenderer();
+	static class ImGUIGraphics* CreateImGuiGraphics();
+	static class ModelClass* CreateModelClass();
+	static class ColorShaderClass* CreateColorShaderClass();
+
 
 	void Init() override;
 	void Update() override;
@@ -17,11 +36,15 @@ public:
 	void InitImGUI(class Window* window);
 	void CleanupImGUI();
 
-private:
-	class Renderer* renderer = nullptr;
-	class CameraClass* camera = nullptr;
-	class ModelClass* model = nullptr;
-	class ColorShaderClass* colorShader = nullptr;
+	static void SubscribeCamera(class Camera* camera);
+	static void UnSubscribeCamera(Camera* camera);
+	static void MakeMainCamera(Camera* camera);
 
-	class ImGuiGraphics* imGuiGraphics = nullptr;
+	class Renderer* renderer = nullptr;
+	Camera* mainCamera = nullptr;
+private:
+
+	std::vector<Camera*> availableCameras;
+	class ImGUIGraphics* imGUIGraphics = nullptr;
+	static RenderModule* instance;
 };

@@ -1,13 +1,15 @@
-#include "Modules/Window.hpp"
 #include <iostream>
 #include <stdexcept>
+
+#include "Modules/Window.hpp"
+#include "Utilities/Logger.hpp"
+
 
 //Window::Data Window::WindowData;
 
 Window::Window(int width, int height, const char* title) : width(width), height(height), title(title), window(nullptr), shouldClose(false){
-    std::cout << "Window created" << std::endl;
+    LOG_DEBUG("Window created");
     // WindowData.SetSize(width, height);
-	// ImGui::whatever::Init(<*window>);	
 }
 
 Window::~Window() {
@@ -15,31 +17,32 @@ Window::~Window() {
 }
 
 void Window::Init() {
-    std::cout << "Window initializing" << std::endl;
+    LOG_DEBUG("Window initializing");
 
     if (!glfwInit()) {
+        LOG_CRITICAL("Window failed to initialize GLFW");
         throw std::runtime_error("Window failed to initialize GLFW");
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Stop GLFW from Creating an OpenGL Context
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-    if (!window) {
+    if (window == nullptr) {
 		glfwTerminate(); //cleanup
+        LOG_CRITICAL("Window failed to create window");
         throw std::runtime_error("Window failed to create window");
     }
 
     SetVSync(true); //Vsync because why not
 
-    std::cout << "Window initialized successfully" << std::endl;
+    LOG_DEBUG("Window initialized successfully");
 }
 
 void Window::Update() {
     shouldClose = glfwWindowShouldClose(window);
-    glfwPollEvents();
 }
 
 void Window::Shutdown() {
-    std::cout << "Window shutting down" << std::endl;
+    LOG_DEBUG("Window shutting down");
     if (window) {
         glfwDestroyWindow(window);
         window = nullptr;
@@ -67,22 +70,25 @@ void Window::SetTitle(const char* newTitle) {
 void Window::ToggleFullscreen() {
     if (window == nullptr) { return; }
 
-    static int windowed_x = 0, windowed_y = 0;
-    static int windowed_width = width, windowed_height = height;
+    static int windowed_x = 0;
+    static int windowed_y = 0;
+
+    static int windowed_width = width;
+    static int windowed_height = height;
 
     if (glfwGetWindowMonitor(window)) {
         glfwSetWindowMonitor(window, nullptr, windowed_x, windowed_y, windowed_width, windowed_height, GLFW_DONT_CARE);
     }
     else {
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-        if (!monitor) return;
+        if (monitor == nullptr) { return; }
 
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-        if (!mode) return;
+        if (mode == nullptr) { return; }
 
         glfwGetWindowPos(window, &windowed_x, &windowed_y);
         glfwGetWindowSize(window, &windowed_width, &windowed_height);
 
-        glfwSetWindowMonitor(window, monitor,0, 0, mode->width, mode->height, mode->refreshRate);
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
     }
 }

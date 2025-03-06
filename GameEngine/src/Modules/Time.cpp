@@ -7,8 +7,8 @@
 #include "Modules/Time.hpp"
 #include "Utilities/PerformanceRecord.hpp"
 
-double Time::deltaTime = .0;
-double Time::time = .0;
+float Time::deltaTime = .0;
+float Time::time = .0;
 Time* Time::instance = nullptr;
 
 Time::Time() {
@@ -22,13 +22,13 @@ Time::Time() {
 }
 
 void Time::Init() {
-	deltaTime = .0;
-	time = .0;
+	deltaTime = .0f;
+	time = .0f;
 	glfwSetTime(.0);
 }
 
 void Time::Update() {
-	deltaTime = glfwGetTime() - time;
+	deltaTime = (float)glfwGetTime() - time;
 	time += deltaTime;
 
 	// ImGui::GLWFiguess::Update(<someParam>); // can t be bothered with searching for it RN

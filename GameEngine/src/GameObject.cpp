@@ -1,9 +1,14 @@
 #include "GameObject.hpp"
 #include "Component.hpp"
 #include "Components/Transform.hpp"
+#include "Components/Renderable.hpp"
 
 
 void GameObject::Update() {
+
+	for (GameObject* child : children) {
+		child->Update();
+	}
 
 	for (std::shared_ptr<Component> component : components) {
 		component->Update();
@@ -16,15 +21,14 @@ void GameObject::Update() {
 }
 
 void GameObject::Render() {
-	return;
-
-	std::shared_ptr<class Renderable> renderablePtr = nullptr;
+	
+	std::shared_ptr<Renderable> renderablePtr = nullptr;
 	for (std::shared_ptr<Component> component : components) {
 
-		//renderablePtr = std::dynamic_pointer_cast<Renderable>(component);
+		renderablePtr = std::dynamic_pointer_cast<Renderable>(component);
 		if (renderablePtr == nullptr) { continue; }
 		
-		// renderablePtr->Render();
+		 renderablePtr->Render();
 	}
 
 #ifdef DEBUG
@@ -35,6 +39,10 @@ void GameObject::Render() {
 
 #ifdef DEBUG
 void GameObject::OnDebug() {
+
+	for (GameObject* child : children) {
+		child->OnDebug();
+	}
 
 	for (std::shared_ptr<Component> component : components) {
 
@@ -49,6 +57,10 @@ void GameObject::OnDebug() {
 
 void GameObject::OnDestroy() {
 
+	for (GameObject* child : children) {
+		child->OnDestroy();
+	}
+
 	for (std::shared_ptr<Component> component : components) {
 		component->OnDestroy();
 	}
@@ -59,6 +71,36 @@ void GameObject::OnDestroy() {
 #endif
 }
 
+#ifdef DEBUG
+GameObject* GameObject::AddChild(const std::string& trackLifeCycleAs, const bool startActive) {
+
+	GameObject* newGameObjectPtr = new GameObject(parentScene, startActive);
+
+	newGameObjectPtr->SetTransform(newGameObjectPtr->AddComponent<Transform>());
+	newGameObjectPtr->parent = this;
+
+	children.push_back(newGameObjectPtr);
+
+	if (trackLifeCycleAs != "") {
+		newGameObjectPtr->trackedAs = trackLifeCycleAs;
+		std::cout << "Created " << trackLifeCycleAs << "\n";
+	}
+
+	return newGameObjectPtr;
+}
+#else
+GameObject* GameObject::AddChild(const bool startActive) {
+
+	GameObject* newGameObjectPtr = new GameObject(parentScene, startActive);
+
+	newGameObjectPtr->SetTransform(newGameObjectPtr->AddComponent<Transform>());
+	newGameObjectPtr->parent = this;
+
+	children.push_back(newGameObjectPtr);
+
+	return newGameObjectPtr;
+}
+#endif
 void GameObject::SetTransform(std::shared_ptr<Transform> transform_) {
 	transform = transform_;
 }

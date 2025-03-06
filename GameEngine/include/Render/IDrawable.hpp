@@ -18,3 +18,4 @@ protected:
 	 */
 	virtual void Draw(class ID3D11DeviceContext* deviceContext) = 0;
 };
+

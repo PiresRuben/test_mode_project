@@ -1,162 +1,128 @@
-#include "Modules/RenderModule.hpp"
-
 #include <iostream>
 
 #include "Engine.hpp"
+
+#include "Modules/RenderModule.hpp"
 #include "Modules/Window.hpp"
-#include "Render/CameraClass.hpp"
+
 #include "Render/Dx11/Dx11ColorShaderClass.hpp"
 #include "Render/Dx11/Dx11ModelClass.hpp"
 #include "Render/Dx11/Dx11Renderer.hpp"
 #include "Render/Dx11/Dx11ImGuiGraphics.hpp"
 
+#include "Components/Renderable.hpp"
+#include "Components/Camera.hpp"
+
 #include "Utilities/ImGUI.hpp"
+#include "Utilities/Logger.hpp"
+
+#include "Common.hpp"
+
+RenderModule* RenderModule::instance = nullptr;
 
 
-enum class APIs {
-	Dx11,
-	Dx12,
-	Vulkan,
-	OpenGL,
+RenderModule::RenderingAPI RenderModule::SelectAPI() {
+	static RenderModule::RenderingAPI selectedAPI = RenderModule::RenderingAPI::Unknown;
 
-	UNKNOW
-};
-
-static APIs SelectAPI() {
-	static APIs selectedAPI(APIs::UNKNOW);
-
-	if (selectedAPI != APIs::UNKNOW) return selectedAPI;
+	if (selectedAPI != RenderingAPI::Unknown) { return selectedAPI; }
 
 	/* Actual selection code instead */
-	selectedAPI = APIs::Dx11;
+	selectedAPI = RenderingAPI::Dx11; // I don t get why not just { static RenderingAPI selectedAPI = RenderingAPI::TheOneIWant; } 
 
 	return selectedAPI;
 }
 
-static Renderer* CreateRenderer(const APIs selectedAPI) {
-	switch (selectedAPI) {
-	case APIs::Dx12:
-	case APIs::Vulkan:
-	case APIs::OpenGL:
-	case APIs::Dx11:
+Renderer* RenderModule::CreateRenderer() {
+	switch (SelectAPI()) {
+	case RenderModule::RenderingAPI::Dx12:
+	case RenderModule::RenderingAPI::Vulkan:
+	case RenderModule::RenderingAPI::OpenGL:
+	case RenderModule::RenderingAPI::Dx11:
 		return new Dx11Renderer();
 	default:
-		throw std::runtime_error("UNKNOW Graphics API");
+		LOG_CRITICAL("Unknown Graphics API");
+		throw std::runtime_error("Unknown Graphics API");
 	}
 }
 
-static ModelClass* CreateModelClass(const APIs selectedAPI) {
-	switch (selectedAPI) {
-	case APIs::Dx12:
-	case APIs::Vulkan:
-	case APIs::OpenGL:
-	case APIs::Dx11:
+ModelClass* RenderModule::CreateModelClass() {
+	switch (SelectAPI()) {
+	case RenderModule::RenderingAPI::Dx12:
+	case RenderModule::RenderingAPI::Vulkan:
+	case RenderModule::RenderingAPI::OpenGL:
+	case RenderModule::RenderingAPI::Dx11:
 		return new Dx11ModelClass();
 	default:
-		throw std::runtime_error("UNKNOW Graphics API");
+		LOG_CRITICAL("Unknown Graphics API");
+		throw std::runtime_error("Unknown Graphics API");
 	}
 }
 
-static ColorShaderClass* CreateColorShaderClass(const APIs selectedAPI) {
-	switch (selectedAPI) {
-	case APIs::Dx12:
-	case APIs::Vulkan:
-	case APIs::OpenGL:
-	case APIs::Dx11:
+ColorShaderClass* RenderModule::CreateColorShaderClass() {
+	switch (SelectAPI()) {
+	case RenderModule::RenderingAPI::Dx12:
+	case RenderModule::RenderingAPI::Vulkan:
+	case RenderModule::RenderingAPI::OpenGL:
+	case RenderModule::RenderingAPI::Dx11:
 		return new Dx11ColorShaderClass();
 	default:
-		throw std::runtime_error("UNKNOW Graphics API");
+		LOG_CRITICAL("Unknown Graphics API");
+		throw std::runtime_error("Unknown Graphics API");
 	}
 }
 
-static ImGuiGraphics* CreateImGuiGraphics(const APIs selectedAPI) {
-	switch (selectedAPI) {
-	case APIs::Dx12:
-	case APIs::Vulkan:
-	case APIs::OpenGL:
-	case APIs::Dx11:
+ImGUIGraphics* RenderModule::CreateImGuiGraphics() {
+	switch (SelectAPI()) {
+	case RenderModule::RenderingAPI::Dx12:
+	case RenderModule::RenderingAPI::Vulkan:
+	case RenderModule::RenderingAPI::OpenGL:
+	case RenderModule::RenderingAPI::Dx11:
 		return new Dx11ImGuiGraphics();
 	default:
-		throw std::runtime_error("UNKNOW Graphics API");
+		LOG_CRITICAL("Unknown Graphics API");
+		throw std::runtime_error("Unknown Graphics API");
 	}
 }
 
 
 void RenderModule::Init() {
 
-	Window* window = Engine::GetInstance()->GetModule<Window>();
+	Window* window = Engine::GetModule<Window>();
 
-	renderer = CreateRenderer(SelectAPI());
+	renderer = CreateRenderer();
 	if (!renderer->Init(window, window->GetSize().x, window->GetSize().y)) {
+
 		MessageBox(*window, L"Could not initialize Direct3D", L"Error", MB_OK);
+		LOG_CRITICAL("Couldn't Initialize Renderer");
 		throw std::runtime_error("Couldn't Initialize Renderer");
 	}
 
-	camera = new CameraClass();
-	camera->SetPosition(0.0f, 0.0f, -5.0f);
-
-	model = CreateModelClass(SelectAPI());
-	if (!model->Initialize(renderer->GetDevice())) {
-		MessageBox(*window, L"Could not initialize the model object.", L"Error", MB_OK);
-		throw std::runtime_error("Couldn't Initialize Model Object");
-	}
-
-	colorShader = CreateColorShaderClass(SelectAPI());
-	if (!colorShader->Initialize(renderer->GetDevice(), window)) {
-		MessageBox(*window, L"Could not initialize the color shader object.", L"Error", MB_OK);
-		throw std::runtime_error("Couldn't Initialize Color Shader Object");
-	}
+	Renderable::SetRenderer(renderer);
 
 	InitImGUI(window);
 }
 
 void RenderModule::Update() { // prepare window in order to draw on it later in RenderModule::Render()
 
-	imGuiGraphics->NewFrame();
+	imGUIGraphics->NewFrame();
 	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+	//ImGui::NewFrame();
 
 	renderer->Clear(0.2f, 0.3f, 0.8f);
 }
 
 void RenderModule::Render() {
-	camera->Render();
-
-	glm::mat4x4 worldMatrix = renderer->GetWorldMatrix();
-	glm::mat4x4 viewMatrix = camera->GetViewMatrix();
-	glm::mat4x4 projectionMatrix = renderer->GetProjectionMatrix();
-
-	// Dessiner le modèle
-	model->Render(renderer->GetDeviceContext());
-
-	if (!colorShader->Render(renderer->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix)) {
-		throw std::runtime_error("IDK");
-	}
+	//mainCamera != nullptr ? mainCamera->Render() : []() { MessageBox(*Engine::GetModule<Window>(), L"No camera", L"Error", MB_OK); throw std::runtime_error("no camera"); }();
 
 	ImGui::Render();
-	imGuiGraphics->RenderDrawData(ImGui::GetDrawData());
+	imGUIGraphics->RenderDrawData();
 
 	renderer->Present();
 }
 
 void RenderModule::Shutdown() {
 
-	if (colorShader != nullptr) {
-		colorShader->Shutdown();
-		delete colorShader;
-		colorShader = nullptr;
-	}
-
-	if (model != nullptr) {
-		model->Shutdown();
-		delete model;
-		model = nullptr;
-	}
-
-	if (camera != nullptr) {
-		delete camera;
-		camera = nullptr;
-	}
+	mainCamera = nullptr;
 
 	if (renderer != nullptr) {
 		renderer->Shutdown();
@@ -164,9 +130,9 @@ void RenderModule::Shutdown() {
 		renderer = nullptr;
 	}
 
-	if (imGuiGraphics != nullptr) {
-		delete imGuiGraphics;
-		imGuiGraphics = nullptr;
+	if (imGUIGraphics != nullptr) {
+		delete imGUIGraphics;
+		imGUIGraphics = nullptr;
 	}
 }
 
@@ -178,17 +144,53 @@ void RenderModule::InitImGUI(Window* window) {
 
 	ImGui_ImplGlfw_InitForOther(window->GetWindow(), true);
 
-	imGuiGraphics = CreateImGuiGraphics(SelectAPI());
-	if (!imGuiGraphics->Init(renderer->GetDevice(), renderer->GetDeviceContext())) {
+	imGUIGraphics = CreateImGuiGraphics();
+	if (!imGUIGraphics->Init(renderer->GetDevice(), renderer->GetDeviceContext())) {
+
 		MessageBox(*window, L"Could not initialize ImGuiGraphics.", L"Error", MB_OK);
+		LOG_CRITICAL("Couldn't Initialize ImGuiGraphics!");
 		throw std::runtime_error("Couldn't Initialize ImGuiGraphics");
 	}
 }
 
 void RenderModule::CleanupImGUI() {
 
-	imGuiGraphics->Shutdown();
+	imGUIGraphics->Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 
 	ImGui::DestroyContext();
+}
+
+void RenderModule::SubscribeCamera(Camera* camera) {
+	instance->availableCameras.push_back(camera);
+}
+
+void RenderModule::UnSubscribeCamera(Camera* camera) {
+
+	instance->availableCameras.erase(
+		std::find(
+			instance->availableCameras.begin(),
+			instance->availableCameras.end(),
+			camera
+		)
+	);
+
+	// if the camera that just got removed was the main one
+	if (camera == instance->mainCamera) {
+
+		instance->mainCamera = instance->availableCameras.empty() ? nullptr : instance->availableCameras[0]; // try ot fall back on the next one if there is one
+	}
+
+}
+
+void RenderModule::MakeMainCamera(Camera* camera) {
+	
+	//// if mainCamera is removed (fed nullptr to RenderModule::MakeMainCamera() )
+	//instance->mainCamera = camera == nullptr ?
+	//		instance->availableCameras.empty() ? nullptr : instance->availableCameras[0]: // fallback if any mainCamera available else no mainCamera
+	//		camera 
+	//;
+
+	instance->mainCamera = camera;
+
 }

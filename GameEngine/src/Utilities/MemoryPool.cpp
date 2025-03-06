@@ -1,10 +1,11 @@
 #include "Utilities/MemoryPool.hpp"
 
 #include <iostream>
+#include "Utilities/Logger.hpp"
 
 
 MemoryPool::MemoryPool() {
-	std::cout << "Memory Pool Instance Created\n";
+	LOG_DEBUG("Memory Pool Instance Created");
 	capacity = 1'048'576; // 1 MiB (mebibyte) the initial pool capacity
 	std::byte* ptr = reinterpret_cast<std::byte*>(operator new(capacity));
 	allocPtr.push_back(ptr);
@@ -12,7 +13,7 @@ MemoryPool::MemoryPool() {
 }
 
 MemoryPool::~MemoryPool() {
-	std::cout << "Memory Pool Instance Destroyed\n";
+	LOG_DEBUG("Memory Pool Instance Destroyed");
 
 	for (std::byte* ptr : allocPtr) {
 		operator delete(ptr);
@@ -29,7 +30,6 @@ MemoryPool& MemoryPool::Instance() {
 }
 
 std::byte* MemoryPool::Allocate(size_t size) {
-	std::cout << "Memory Pool Allocation of " << size << " bytes at: ";
 
 	{ // artificial scope for the mutex because flemme
 		std::scoped_lock lock(mtx);
@@ -45,7 +45,7 @@ std::byte* MemoryPool::Allocate(size_t size) {
 			}
 
 			pool.erase(key);
-			std::cout << ptr << '\n';
+			LOG_DEBUG("Memory Pool Allocation of {} bytes at: {}", size, ptr);
 			return ptr;
 		}
 
@@ -56,7 +56,7 @@ std::byte* MemoryPool::Allocate(size_t size) {
 }
 
 void MemoryPool::Deallocate(std::byte* ptr, size_t size) {
-	std::cout << "Memory Pool Deallocation of pointer: " << ptr << " of size: " << size << '\n';
+	LOG_DEBUG("Memory Pool Deallocation of pointer: {} of size: {}", ptr, size);
 
 	{ // artificial scope for the mutex because flemme
 		std::scoped_lock lock(mtx);
@@ -68,7 +68,7 @@ void MemoryPool::Deallocate(std::byte* ptr, size_t size) {
 }
 
 void MemoryPool::Extend(size_t size) {
-	std::cout << "Memory Pool Extention of " << size << " bytes\n";
+	LOG_DEBUG("Memory Pool Extention of {} bytes", size);
 	std::byte* ptr;
 
 	{ // artificial scope for the mutex because flemme
@@ -91,9 +91,9 @@ void MemoryPool::MergeChunks(const std::map<std::byte*, size_t>::iterator& it) {
 	const auto& next = std::next(it);
 	if (next != pool.end()) {
 		if (it->first + it->second == next->first) {
-			std::cout << "Memory Pool Merging chunks " << it->first << " of size: " << it->second << " with " << next->first << " of size: " << next->second << '\n';
+			LOG_DEBUG("Memory Pool Merging chunks {} of size: {} with {} of size: {}", it->first, it->second, next->first, next->second);
 			it->second += next->second;
-			std::cout << "Resulting chunk " << it->first << " of size: " << it->second << '\n';
+			LOG_DEBUG("Resulting chunk {} of size: {}", it->first, it->second);
 			pool.erase(next);
 		}
 	}
@@ -102,9 +102,9 @@ void MemoryPool::MergeChunks(const std::map<std::byte*, size_t>::iterator& it) {
 
 	const auto& previous = std::prev(it);
 	if (previous->first + previous->second == it->first) {
-		std::cout << "Memory Pool Merging chunks " << previous->first << " of size: " << previous->second << " with " << it->first << " of size: " << it->second << '\n';
+		LOG_DEBUG("Memory Pool Merging chunks {} of size: {} with {} of size: {}", previous->first, previous->second, it->first, it->second);
 		previous->second += it->second;
-		std::cout << "Resulting chunk " << previous->first << " of size: " << previous->second << '\n';
+		LOG_DEBUG("Resulting chunk {} of size: {}", previous->first, previous->second);
 		pool.erase(it);
 	}
 }

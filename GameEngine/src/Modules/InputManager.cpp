@@ -1,16 +1,21 @@
 #include <iostream>
-#include "Modules/InputManager.hpp"
+
 #include "Engine.hpp"
+#include "Modules/InputManager.hpp"
 #include "Modules/Window.hpp"
+#include "Utilities/Logger.hpp"
 
 InputManager* InputManager::instance = nullptr;
 
 InputManager::InputManager() {
+
     if (instance != nullptr) {
+        LOG_CRITICAL("InputManager instance already exists!");
         throw std::runtime_error("InputManager instance already exists!");
     }
+
     instance = this;
-    std::cout << "InputManager created" << std::endl;
+    LOG_DEBUG("InputManager created");
 }
 
 void InputManager::SetWindow(GLFWwindow* window) {
@@ -23,14 +28,17 @@ void InputManager::SetWindow(GLFWwindow* window) {
 }
 
 void InputManager::Init() {
-    std::cout << "InputManager initializing" << std::endl;
+    LOG_DEBUG("InputManager initializing");
 
-    auto* windowModule = Engine::GetInstance()->GetModule<Window>();
+    Window* windowModule = Engine::GetInstance()->GetModule<Window>();
     if (!windowModule) {
+        LOG_CRITICAL("InputManager window module not found!");
         throw std::runtime_error("InputManager window module not found!");
     }
 
     window = windowModule->GetWindow();
+
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetKeyCallback(window, KeyCallback);
     glfwSetMouseButtonCallback(window, MouseButtonCallback);
@@ -41,32 +49,30 @@ void InputManager::Init() {
 void InputManager::ResetInputsState() {
     previousKeyStates = currentKeyStates;
     previousMouseButtonStates = currentMouseButtonStates;
+
+    instance->lastMouseX = instance->mouseX;
+    instance->lastMouseY = instance->mouseY;
     mouseMoved = false;
+
     scrollDelta = 0.0f;
 }
 
 void InputManager::Update() {
-    for (const auto& pair : currentKeyStates) {
-        if (pair.second) {
-            std::cout << "InputManager key pressed: " << pair.first << std::endl;
-        }
-    }
 
-    for (const auto& pair : currentMouseButtonStates) {
-        if (pair.second) {
-            std::cout << "InputManager mouse button pressed: " << pair.first << std::endl;
-        }
-    }
+    ResetInputsState();
 
-    if (mouseMoved) {
-        //std::cout << "InputManager mouse position: " << mouseX << ", " << mouseY << std::endl;
+    glfwPollEvents();
+
+    if (GetKeyDown(GLFW_KEY_LEFT_ALT)) {
+        cursorEnabled = !cursorEnabled;
+        glfwSetInputMode(window, GLFW_CURSOR, cursorEnabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
     }
 }
 
 bool InputManager::GetWhetherAnyInput() {
-    bool hasInput = GetAnyKeyDown() || GetAnyMouseButtonDown() || mouseMoved || (scrollDelta != 0.0f);
+    bool hasInput = GetAnyKeyDown() || GetAnyMouseButtonDown() || instance->mouseMoved || (instance->scrollDelta != 0.0f);
     if (hasInput) {
-        std::cout << "InputManager input detected!" << std::endl;
+        LOG_DEBUG("InputManager input detected!");
     }
     return hasInput;
 }
@@ -74,48 +80,48 @@ bool InputManager::GetWhetherAnyInput() {
 #pragma region Keyboard Inputs
 
 bool InputManager::GetAnyKeyDown() {
-    for (const auto& pair : currentKeyStates) {
-        if (pair.second && !previousKeyStates[pair.first]) {
-            std::cout << "InputManager new key pressed: " << pair.first << std::endl;
+    for (const auto& [key, pressed] : instance->currentKeyStates) {
+        if (pressed && !instance->previousKeyStates[key]) {
+            LOG_DEBUG("InputManager new key pressed: {}", key);
             return true;
         }
     }
+
     return false;
 }
 
-bool InputManager::GetWhichKeyDown(KeyRepresentation& key) {
-    for (const auto& pair : currentKeyStates) {
-        if (pair.second && !previousKeyStates[pair.first]) {
-            key = static_cast<KeyRepresentation>(pair.first);
-            std::cout << "InputManager key down detected: " << pair.first << std::endl;
+bool InputManager::GetWhichKeyDown(int& key) {
+    for (const auto& [key_, pressed] : instance->currentKeyStates) {
+        if (pressed && !instance->previousKeyStates[key_]) {
+            LOG_DEBUG("InputManager key down detected: {}", key_);
+            key = key_;
             return true;
         }
     }
+
     return false;
 }
 
-bool InputManager::GetKeyDown(const KeyRepresentation key) {
-    int keyValue = static_cast<int>(key);
-    bool isDown = currentKeyStates[keyValue] && !previousKeyStates[keyValue];
+bool InputManager::GetKeyDown(const int key) {
+    bool isDown = instance->currentKeyStates[key] && !instance->previousKeyStates[key];
     if (isDown) {
-        std::cout << "InputManager specific key down: " << keyValue << std::endl;
+        LOG_DEBUG("InputManager specific key down: {}", key);
     }
     return isDown;
 }
 
-bool InputManager::GetKey(const KeyRepresentation key) {
-    bool isPressed = currentKeyStates[static_cast<int>(key)];
+bool InputManager::GetKey(const int key) {
+    bool isPressed = instance->currentKeyStates[key];
     if (isPressed) {
-        std::cout << "InputManager key held: " << static_cast<int>(key) << std::endl;
+        LOG_DEBUG("InputManager key held: {}", key);
     }
     return isPressed;
 }
 
-bool InputManager::GetKeyUp(const KeyRepresentation key) {
-    int keyValue = static_cast<int>(key);
-    bool isUp = !currentKeyStates[keyValue] && previousKeyStates[keyValue];
+bool InputManager::GetKeyUp(const int key) {
+    bool isUp = !instance->currentKeyStates[key] && instance->previousKeyStates[key];
     if (isUp) {
-        std::cout << "InputManager key released: " << keyValue << std::endl;
+        LOG_DEBUG("InputManager key released: {}", key);
     }
     return isUp;
 }
@@ -127,48 +133,48 @@ bool InputManager::GetKeyUp(const KeyRepresentation key) {
 #pragma region Buttons
 
 bool InputManager::GetAnyMouseButtonDown() {
-    for (const auto& pair : currentMouseButtonStates) {
-        if (pair.second && !previousMouseButtonStates[pair.first]) {
-            std::cout << "InputManager new mouse button pressed: " << pair.first << std::endl;
-            return true;
+    for (const auto& [mouseButton, pressed] : instance->currentMouseButtonStates) {
+        if (pressed && !instance->previousMouseButtonStates[mouseButton]) {
+            LOG_DEBUG("InputManager new mouse button pressed: {}", mouseButton);
+            return true; 
         }
     }
+
     return false;
 }
 
-bool InputManager::GetWhichMouseButtonDown(MouseButtonRepresentation& button) {
-    for (const auto& pair : currentMouseButtonStates) {
-        if (pair.second && !previousMouseButtonStates[pair.first]) {
-            button = static_cast<MouseButtonRepresentation>(pair.first);
-            std::cout << "InputManager mouse button down detected: " << pair.first << std::endl;
+bool InputManager::GetWhichMouseButtonDown(int& button) {
+    for (const auto& [mouseButton, pressed] : instance->currentMouseButtonStates) {
+        if (pressed && !instance->previousMouseButtonStates[mouseButton]) {
+            button = mouseButton;
+            LOG_DEBUG("InputManager mouse button down detected: {}", mouseButton);
             return true;
         }
     }
+
     return false;
 }
 
-bool InputManager::GetMouseButtonDown(const MouseButtonRepresentation button) {
-    int buttonValue = static_cast<int>(button);
-    bool isDown = currentMouseButtonStates[buttonValue] && !previousMouseButtonStates[buttonValue];
+bool InputManager::GetMouseButtonDown(const int button) {
+    bool isDown = instance->currentMouseButtonStates[button] && !instance->previousMouseButtonStates[button];
     if (isDown) {
-        std::cout << "InputManager specific mouse button down: " << buttonValue << std::endl;
+        LOG_DEBUG("InputManager specific mouse button down: {}", button);
     }
     return isDown;
 }
 
-bool InputManager::GetMouseButton(const MouseButtonRepresentation button) {
-    bool isPressed = currentMouseButtonStates[static_cast<int>(button)];
+bool InputManager::GetMouseButton(const int button) {
+    bool isPressed = instance->currentMouseButtonStates[button];
     if (isPressed) {
-        std::cout << "InputManager mouse button held: " << static_cast<int>(button) << std::endl;
+        LOG_DEBUG("InputManager mouse button held: {}", button);
     }
     return isPressed;
 }
 
-bool InputManager::GetMouseButtonUp(const MouseButtonRepresentation button) {
-    int buttonValue = static_cast<int>(button);
-    bool isUp = !currentMouseButtonStates[buttonValue] && previousMouseButtonStates[buttonValue];
+bool InputManager::GetMouseButtonUp(const int button) {
+    bool isUp = !instance->currentMouseButtonStates[button] && instance->previousMouseButtonStates[button];
     if (isUp) {
-        std::cout << "InputManager mouse button released: " << buttonValue << std::endl;
+        LOG_DEBUG("InputManager mouse button released: {}", button);
     }
     return isUp;
 }
@@ -177,24 +183,26 @@ bool InputManager::GetMouseButtonUp(const MouseButtonRepresentation button) {
 
 #pragma region Position
 
-Vector2Representation InputManager::GetMousePosition() {
-    std::cout << "InputManager mouse position queried: " << mouseX << ", " << mouseY << std::endl;
-    return Vector2Representation(static_cast<float>(mouseX), static_cast<float>(mouseY));
+glm::vec2 InputManager::GetMousePosition() {
+    LOG_DEBUG("InputManager mouse position queried: {}, {}", instance->mouseX, instance->mouseY);
+    return glm::vec2(static_cast<float>(instance->mouseX), static_cast<float>(instance->mouseY));
 }
 
 bool InputManager::GetWetherAnyMouseMotion() {
-    if (mouseMoved) {
-        std::cout << "InputManager mouse motion detected" << std::endl;
+    if (instance->mouseMoved) {
+        LOG_DEBUG("InputManager mouse motion detected");
     }
-    return mouseMoved;
+    return instance->mouseMoved;
 }
 
-Vector2Representation InputManager::GetMouseDelta() {
-    Vector2Representation delta(
-        static_cast<float>(mouseX - lastMouseX),
-        static_cast<float>(mouseY - lastMouseY)
-    );
-    std::cout << "InputManager mouse delta: " << delta.x << ", " << delta.y << std::endl;
+glm::vec2 InputManager::GetMouseDelta() {
+
+    glm::vec2 delta{
+        static_cast<float>(instance->mouseX - instance->lastMouseX),
+        static_cast<float>(instance->mouseY - instance->lastMouseY)
+    };
+
+    LOG_DEBUG("InputManager mouse delta: {}, {}", delta.x, delta.y);
     return delta;
 }
 
@@ -203,10 +211,10 @@ Vector2Representation InputManager::GetMouseDelta() {
 #pragma region Wheel
 
 float InputManager::GetMouseWheelDelta() {
-    if (scrollDelta != 0.0f) {
-        std::cout << "InputManager mouse wheel delta: " << scrollDelta << std::endl;
+    if (instance->scrollDelta != 0.0f) {
+        LOG_DEBUG("InputManager mouse wheel delta: {}", instance->scrollDelta);
     }
-    return scrollDelta;
+    return instance->scrollDelta;
 }
 
 #pragma endregion
@@ -214,33 +222,27 @@ float InputManager::GetMouseWheelDelta() {
 #pragma endregion
 
 void InputManager::Shutdown() {
-    std::cout << "InputManager shutting down" << std::endl;
+    LOG_DEBUG("InputManager shutting down");
 }
 
 void InputManager::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (instance) {
-        instance->currentKeyStates[key] = (action != GLFW_RELEASE);
-    }
+    instance->currentKeyStates[key] = (action != GLFW_RELEASE);
 }
 
 void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (instance) {
-        instance->currentMouseButtonStates[button] = (action != GLFW_RELEASE);
-    }
+    instance->currentMouseButtonStates[button] = (action != GLFW_RELEASE);
 }
 
 void InputManager::CursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (instance) {
-        instance->lastMouseX = instance->mouseX;
-        instance->lastMouseY = instance->mouseY;
-        instance->mouseX = xpos;
-        instance->mouseY = ypos;
-        instance->mouseMoved = true;
-    }
+    instance->mouseX = xpos;
+    instance->mouseY = ypos;
+    instance->mouseMoved = true;
 }
 
 void InputManager::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (instance) {
-        instance->scrollDelta = static_cast<float>(yoffset);
-    }
+    instance->scrollDelta = (float)yoffset;
+}
+
+bool InputManager::IsCursorEnabled() {
+    return instance->cursorEnabled;
 }

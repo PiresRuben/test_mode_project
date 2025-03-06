@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "Module.hpp"
 #include "Utilities/MulticastDelegate.hpp"
 
 #ifdef DEBUG
@@ -17,7 +16,7 @@
 class Scene {
 
 public:
-	Scene(bool active);
+	Scene(const bool active);
 	bool active = true;
 
 	virtual void Init() { }

@@ -7,8 +7,8 @@
 
 
 bool Dx11ImGuiGraphics::Init(DeviceVariant device, DeviceContextVariant device_context) const {
-	auto ptrDevice = std::get_if<ID3D11Device*>(&device);
-	auto ptrDeviceContext = std::get_if<ID3D11DeviceContext*>(&device_context);
+	ID3D11Device** ptrDevice = std::get_if<ID3D11Device*>(&device);
+	ID3D11DeviceContext** ptrDeviceContext = std::get_if<ID3D11DeviceContext*>(&device_context);
 
 	if (ptrDevice != nullptr && ptrDeviceContext != nullptr) {
 		return ImGui_ImplDX11_Init(*ptrDevice, *ptrDeviceContext);
@@ -25,6 +25,6 @@ void Dx11ImGuiGraphics::NewFrame() const {
 	ImGui_ImplDX11_NewFrame();
 }
 
-void Dx11ImGuiGraphics::RenderDrawData(ImDrawData* draw_data) const {
+void Dx11ImGuiGraphics::RenderDrawData() const {
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }

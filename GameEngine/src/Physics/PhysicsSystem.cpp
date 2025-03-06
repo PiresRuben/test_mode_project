@@ -3,7 +3,6 @@
 #include <iostream>
 
 namespace {
-    // Implémentations minimales des interfaces
     class BPLayerInterfaceImpl : public JPH::BroadPhaseLayerInterface {
     public:
         virtual JPH::uint GetNumBroadPhaseLayers() const override { return 1; }
@@ -56,6 +55,9 @@ bool PhysicsSystem::InitializeJoltTypes() {
         // Création de la factory
         if (!JPH::Factory::sInstance) {
             JPH::Factory::sInstance = new JPH::Factory();
+            if (!JPH::Factory::sInstance) {
+                throw std::runtime_error("Failed to create JPH::Factory instance");
+            }
         }
         std::cout << "Physics System: Factory created" << std::endl;
 
@@ -78,6 +80,9 @@ bool PhysicsSystem::CreatePhysicsSystem() {
         // Création des composants avec vérification
         try {
             mTempAllocator = new JPH::TempAllocatorImpl(32 * 1024);
+            if (!mTempAllocator) {
+                throw std::runtime_error("Failed to allocate TempAllocator");
+            }
             std::cout << "Physics System: Temp allocator created" << std::endl;
         }
         catch (const std::exception& e) {
@@ -89,6 +94,9 @@ bool PhysicsSystem::CreatePhysicsSystem() {
             mBroadPhaseLayerInterface = new BPLayerInterfaceImpl();
             mObjectVsBroadPhaseLayerFilter = new ObjectVsBroadPhaseLayerFilterImpl();
             mObjectLayerPairFilter = new ObjectLayerPairFilterImpl();
+            if (!mBroadPhaseLayerInterface || !mObjectVsBroadPhaseLayerFilter || !mObjectLayerPairFilter) {
+                throw std::runtime_error("Failed to allocate interface components");
+            }
             std::cout << "Physics System: Interfaces created" << std::endl;
         }
         catch (const std::exception& e) {
@@ -99,6 +107,9 @@ bool PhysicsSystem::CreatePhysicsSystem() {
         // Création du système physique avec vérification
         try {
             mPhysicsSystem = new JPH::PhysicsSystem();
+            if (!mPhysicsSystem) {
+                throw std::runtime_error("Failed to allocate PhysicsSystem");
+            }
             std::cout << "Physics System: System instance created" << std::endl;
         }
         catch (const std::exception& e) {

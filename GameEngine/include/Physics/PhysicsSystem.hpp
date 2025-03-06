@@ -9,7 +9,6 @@
 #include <Jolt/Core/JobSystemWithBarrier.h>
 #include <Core/Maths/glm.hpp>
 
-// Forward declarations
 namespace JPH {
     class TempAllocatorImpl;
     class BroadPhaseLayerInterface;

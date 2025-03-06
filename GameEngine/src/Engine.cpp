@@ -9,6 +9,7 @@
 #include "Modules/PhysicsModule.hpp"
 
 #include "Utilities/ImGUI.hpp"
+#include "Utilities/Logger.hpp"
 
 Engine* Engine::instance = nullptr;
 #ifdef DEBUG
@@ -29,80 +30,63 @@ Engine* Engine::GetInstance() {
 }
 
 void Engine::Run() {
+
     Init();
 
-	while (ShouldRun()) {
-		Update();
-
-		ImGUI::Begin("Hi ^^");
-		ImGUI::Text("^^");
-		ImGUI::End();
-
-		Render();
-	}
+    while (ShouldRun()) {
+        Update();
+        Render();
+    }
 
     Shutdown();
 }
 
 bool Engine::ShouldRun() const {
-    auto* window = GetModule<Window>();
-    return window != nullptr ? !window->ShouldClose() : false;
+    return !window->ShouldClose();
 }
 
 void Engine::CreateModules() {
-	// Graphics related modules first
-	CreateModule<Window>();
-	CreateModule<RenderModule>();
-
-	// Core modules
-	CreateModule<InputManager>();
-	CreateModule<Time>();
-	CreateModule<ScenesManager>();
-	CreateModule<AudioManager>();
-
-	// Physics last
-	try {
-		CreateModule<PhysicsModule>();
-	}
-	catch (const std::exception& e) {
-		std::cerr << "Failed to create Physics Module: " << e.what() << std::endl;
-		// Handle error or continue without physics
-	}
+    window = CreateModule<Window>();
+    _ = CreateModule<InputManager>();
+    _ = CreateModule<Time>();
+    _ = CreateModule<ScenesManager>();
+    _ = CreateModule<RenderModule>();
+    _ = CreateModule<AudioManager>();
+    //_ = CreateModule<PhysicsModule>();
 }
 
 void Engine::Init() {
-	std::cout << "Init Starting\n";
+    Logger::Init();
+    LOG_DEBUG("Init Starting");
 
-	CreateModules();
-	std::cout << "CreateModules done\n";
+    CreateModules();
+    LOG_DEBUG("CreateModules done");
 
-	for (Module* module : modules) {
-		module->Init();
-	}
+    for (Module* module : modules) {
+        module->Init();
+    }
 
-	std::cout << "Init Done\n";
+    LOG_DEBUG("Init Done");
 }
 
 void Engine::Update() {
 
-	for (Module* module : modules) {
-		module->Update();
-	}
+    for (Module* module : modules) {
+        module->Update();
+    }
 }
 
 void Engine::Render() {
-	
-	for (Module* module : modules) {
-		module->Render();
-	}
+
+    for (Module* module : modules) {
+        module->Render();
+    }
 }
 
 void Engine::Shutdown() {
-	
-	for (Module* module : modules) {
-		module->Shutdown();
-		delete module;
-	}
+
+    for (Module* module : modules) {
+        module->Shutdown();
+        delete module;
+    }
 }
-
-

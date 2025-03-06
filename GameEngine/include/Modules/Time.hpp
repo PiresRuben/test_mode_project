@@ -19,8 +19,8 @@ public:
 	Time();
 	void Init() override;
 	void Update() override;
-	static double deltaTime;
-	static double time;
+	static float deltaTime;
+	static float time;
 #ifdef DEBUG
 	static void BeginTimedExecution(const std::string& name);
 	static void TerminateTimedExecution(const std::string& name);
@@ -33,8 +33,8 @@ private:
 	static Time* instance;
 
 	unsigned int frameCount = 0;
-	const double MIN_FRAMERATE_SAMPLE_DURATION = .1;
-	double frameRateSampleDuration = MIN_FRAMERATE_SAMPLE_DURATION;
-	double currentFrameRateSampleCounter = .0;
-	double lastRecordedFps = .0;
+	const float MIN_FRAMERATE_SAMPLE_DURATION = .1f;
+	float frameRateSampleDuration = MIN_FRAMERATE_SAMPLE_DURATION;
+	float currentFrameRateSampleCounter = .0f;
+	float lastRecordedFps = .0f;
 };

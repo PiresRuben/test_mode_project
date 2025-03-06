@@ -1,14 +1,26 @@
 #pragma once
-#include <GLFW/glfw3.h>
+
 #include <unordered_map>
+
+#include <GLFW/glfw3.h>
+
+#include "Core/Maths/vec2.hpp"
+
 #include "Module.hpp"
-#include "Vector2Representation.hpp"
-#include "InputEnums.hpp"
+
+
 
 class InputManager : public Module {
 private:
+
+    enum class KeyReturn {
+        Pressed = GLFW_PRESS,
+        Released = GLFW_RELEASE,
+        Repeat = GLFW_REPEAT
+    };
+
     static InputManager* instance;
-    GLFWwindow* window = nullptr;
+    struct GLFWwindow* window = nullptr;
 
     std::unordered_map<int, bool> currentKeyStates;
     std::unordered_map<int, bool> previousKeyStates;
@@ -16,10 +28,13 @@ private:
     std::unordered_map<int, bool> currentMouseButtonStates;
     std::unordered_map<int, bool> previousMouseButtonStates;
 
-    double mouseX = 0.0, mouseY = 0.0;
-    double lastMouseX = 0.0, lastMouseY = 0.0;
+    double mouseX = 0.0;
+    double mouseY = 0.0;
+    double lastMouseX = 0.0;
+    double lastMouseY = 0.0;
     float scrollDelta = 0.0f;
     bool mouseMoved = false;
+    bool cursorEnabled = true;
 
     static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
@@ -34,22 +49,24 @@ public:
     void Update() override;
     void Shutdown() override;
 
-    bool GetWhetherAnyInput();
+    static bool GetWhetherAnyInput();
 
-    bool GetAnyKeyDown();
-    bool GetWhichKeyDown(KeyRepresentation& key);
-    bool GetKeyDown(const KeyRepresentation key);
-    bool GetKey(const KeyRepresentation key);
-    bool GetKeyUp(const KeyRepresentation key);
+    static bool GetAnyKeyDown();
+    static bool GetWhichKeyDown(int& key);
+    static bool GetKeyDown(const int key);
+    static bool GetKey(const int key);
+    static bool GetKeyUp(const int key);
 
-    bool GetAnyMouseButtonDown();
-    bool GetWhichMouseButtonDown(MouseButtonRepresentation& button);
-    bool GetMouseButtonDown(const MouseButtonRepresentation button);
-    bool GetMouseButton(const MouseButtonRepresentation button);
-    bool GetMouseButtonUp(const MouseButtonRepresentation button);
+    static bool GetAnyMouseButtonDown();
+    static bool GetWhichMouseButtonDown(int& button);
+    static bool GetMouseButtonDown(const int button);
+    static bool GetMouseButton(const int button);
+    static bool GetMouseButtonUp(const int button);
 
-    Vector2Representation GetMousePosition();
-    bool GetWetherAnyMouseMotion();
-    Vector2Representation GetMouseDelta();
-    float GetMouseWheelDelta();
+    static glm::vec2 GetMousePosition();
+    static bool GetWetherAnyMouseMotion();
+    static glm::vec2 GetMouseDelta();
+    static float GetMouseWheelDelta();
+
+    static bool IsCursorEnabled();
 };

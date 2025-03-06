@@ -5,7 +5,7 @@
 #include "Render/APIsVariant.hpp"
 
 /**
- * \brief Abstract Base class Renderer to allow multiple graphics APIs
+ * \brief Abstract Base class Renderer to allow multiple graphics RenderingAPI
  */
 class Renderer {
 public:

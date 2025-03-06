@@ -4,7 +4,7 @@
 #include "Engine.hpp"
 
 
-Scene::Scene(bool active_) {
+Scene::Scene(const bool active_) {
 	active = active_;
 }
 
